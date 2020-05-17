@@ -8,6 +8,6 @@ It's designed to work with [nfpm](https://github.com/goreleaser/nfpm) CLI tool t
 
 ```
 export HORNETCTL_VERSION=0.1
-nfpm pkg -t goshimmerctl_0.1_all.deb
+nfpm pkg -t hornetctl_0.1_all.deb
 ```
 
