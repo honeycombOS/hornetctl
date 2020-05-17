@@ -5,5 +5,7 @@ chmod +x /usr/bin/hornet_clean_export
 chmod +x /usr/bin/hornet_clean_db
 chmod +x /usr/bin/hornet_dashboard
 chmod +x /usr/bin/hornet_neighbors
+chmod +x /usr/bin/hornetctl
+chmod +x /usr/bin/hornet_network
 
 exit 0

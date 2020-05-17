@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+
+import os
+import errno
+import sys
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option("-c", "--comnet", action="store_false", dest="network", default=False, help="Set Hornet Service to ComNet.")
+parser.add_option("-m", "--mainnet", action="store_true", dest="network", default=True, help="Set Hornet Service to MainNet (default).")
+
+(options, args) = parser.parse_args()
+
+default_file = "/etc/default/hornet"
+comnet_string = "OPTIONS=\"--config config_comnet\"\n"
+
+# read default file
+lines = []
+try:
+    f = open(default_file, "r")
+    lines = f.readlines()
+    f.close()
+
+except IOError as e:
+    errorn, strerror = e.args
+    if errorn == errno.EACCES:
+        print("You need root permissions to do this!")
+        sys.exit(1)
+
+# True enables mainnet, False enables comnet
+if options.network:
+    if comnet_string in lines:
+        lines[:] = (value for value in lines if value != comnet_string)
+else:
+    lines.append(comnet_string)
+
+# write default file
+try:
+    f = open(default_file, "w")
+    for line in lines:
+        f.write(line)
+    f.close()
+
+except IOError as e:
+    errorn, strerror = e.args
+    if errorn == errno.EACCES:
+        print("You need root permissions to do this!")
+        sys.exit(1)

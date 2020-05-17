@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+
+import os
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option("--start", action="store_true", dest="on", default=True, help="Start Hornet Systemd Service. (default)")
+parser.add_option("--stop", action="store_false", dest="on", default=True, help="Stop Hornet Systemd Service.")
+
+(options, args) = parser.parse_args()
+
+if options.on:
+    os.system('systemctl start hornet')
+else:
+    os.system('systemctl stop hornet')
