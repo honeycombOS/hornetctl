@@ -10,7 +10,6 @@ parser.add_option("-c", "--comnet", action="store_false", dest="network", defaul
 parser.add_option("-m", "--mainnet", action="store_true", dest="network", default=True, help="Set Hornet Service to MainNet (default).")
 
 (options, args) = parser.parse_args()
-
 default_file = "/etc/default/hornet"
 comnet_string = "OPTIONS=\"--config config_comnet\"\n"
 
@@ -40,6 +39,7 @@ try:
     for line in lines:
         f.write(line)
     f.close()
+    print('network update successfull')
 
 except IOError as e:
     errorn, strerror = e.args
