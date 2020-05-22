@@ -6,8 +6,24 @@ This repository contains tools that help managing HORNET nodes.
 
 It's designed to work with [nfpm](https://github.com/goreleaser/nfpm) CLI tool to create a `.deb.` package.
 
+# Install
+
+Tested on Ubuntu 18.04.
+
+1. install nfpm into Ubuntu:
 ```
-export HORNETCTL_VERSION=0.1
-nfpm pkg -t hornetctl_0.1_all.deb
+$ wget https://github.com/goreleaser/nfpm/releases/download/v1.2.1/nfpm_amd64.deb
+$ sudo dpkg -i nfpm_amd64.deb
 ```
 
+2. create hornetctl package:
+```
+$ git clone https://github.com/honeycombOS/hornetctl
+$ cd hornetctl
+$ nfpm pkg -t hornetctl_0.1_all.deb
+```
+
+3. Install hornetctl package into Ubuntu:
+```
+$ sudo dpkg -i hornetctl_0.1_all.deb
+```
