@@ -30,6 +30,36 @@ $ sudo dpkg -i hornetctl_0.1_all.deb
 
 # Usage:
 ```
+$ hornetctl -h
+Usage: hornetctl [options]
+
+Options:
+  -h, --help  show this help message and exit
+  --start     Start Hornet Systemd Service. (default)
+  --stop      Stop Hornet Systemd Service.
+```
+
+```
+$ hornet_dashboard -h
+Usage: hornet_dashboard [options]
+
+Options:
+  -h, --help  show this help message and exit
+  --off       Disable Hornet Dashboard.
+  --on        Enable Hornet Dashboard (default).
+```
+
+```
+$ hornet_network -h
+Usage: hornet_network [options]
+
+Options:
+  -h, --help     show this help message and exit
+  -c, --comnet   Set Hornet Service to ComNet.
+  -m, --mainnet  Set Hornet Service to MainNet (default).
+```
+
+```
 $ hornet_neighbors -h
 usage: hornet_neighbors [-h] [--debug] [--neighbors NEIGHBORS]
                         [--remove-reverse] (--remove | --add | --list)
