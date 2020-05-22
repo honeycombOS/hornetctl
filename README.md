@@ -27,3 +27,13 @@ $ nfpm pkg -t hornetctl_0.1_all.deb
 ```
 $ sudo dpkg -i hornetctl_0.1_all.deb
 ```
+
+# Usage:
+```
+$ hornet_neighbors -h
+usage: hornet_neighbors [-h] [--debug] [--neighbors NEIGHBORS]
+                        [--remove-reverse] (--remove | --add | --list)
+                        [--file FILE] [--host HOST] [--timeout TIMEOUT]
+                        [--hornet] [--version] [--api-version API_VERSION]
+hornet_neighbors: error: one of the arguments --remove/-r --add/-a --list/-l is required
+```
