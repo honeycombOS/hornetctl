@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+
+import os
+import subprocess
+import json
+import sys
+
+def main():
+	status = {
+		"version": getHornetVersion(),
+		"node": getNodeStatus(),
+		"networkType": getNetworkType(),
+		"dashboardStatus": getDashboardStatus()
+	}
+	status = json.dumps(status)
+	print(status)
+
+
+def getHornetVersion():
+	try:
+		status, output = subprocess.getstatusoutput('hornet --version')
+		if status != 0:
+			return "unknown"
+		else:
+			return output
+	except:
+		return "unknown"
+
+def getNodeStatus():
+	try:
+		cmd = 'systemctl status hornet'
+		proc = subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE)
+		stdout_list = proc.communicate()[0].decode("utf-8").split('\n')
+		for line in stdout_list:
+			if 'Active:' in line:
+				if '(running)' in line and 'since' in line:
+					return {
+						"status": 'running',
+						"since": line.split('since')[1].strip()
+					}
+				elif 'inactive' in line:
+					return {
+						"status": 'inactive'
+					}
+				elif 'since' in line:
+					return {
+						"status": 'not-running',
+						"since": line.split('since')[1].strip()
+					}
+		return {
+			"status": "unknown"
+		}
+	except:
+		return {
+			"status": "error"
+		}
+
+def getNetworkType():
+	try:
+		comnet_string = "OPTIONS=\"--config config_comnet\"\n"
+		lines = []
+		default_file = "/etc/default/hornet"
+		f = open(default_file, "r")
+		lines = f.readlines()
+		f.close()
+		if comnet_string in lines:
+			return 'comnet'
+		else:
+			return 'mainnet'
+	except IOError as e:
+		errorn, strerror = e.args
+		if errorn == errno.EACCES:
+			print("You need root permissions to do this!")
+			sys.exit(1)
+
+def getDashboardStatus():
+	try:
+		networkType = getNetworkType()
+		if networkType == "mainnet":
+			config_file = "/var/lib/hornet/config.json"
+		elif networkType == "comnet":
+			config_file = "/var/lib/hornet/config_comnet.json"
+		lines = ""
+		with open(config_file, "r") as f:
+			data = json.load(f)
+			if '0.0.0.0' in data["dashboard"]["bindAddress"]:
+				return 'enabled'
+			else:
+				return 'disabled'
+	except IOError as e:
+		errorn, strerror = e.args
+		if errorn == errno.EACCES:
+			print("You need root permissions to do this!")
+			sys.exit(1)
+
+if __name__ == "__main__":
+    main()
