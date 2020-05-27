@@ -17,16 +17,25 @@ if not status:
     except:
         print("Error while stopping hornet systemd service.")
 
-ss_path = "/var/lib/hornet/export.bin"
+mainnet_path = "/var/lib/hornet/export.bin"
+comnet_path = "/var/lib/hornet/export_comnet.bin"
 
-exists = os.path.isdir(ss_path)
+exists = os.path.isfile(mainnet_path) or os.path.isfile(comnet_path)
 
 if not exists:
     print("Hornet export.bin is already clean. Nothing to do.")
 else:
     try:
-        shutil.rmtree(ss_path)
+        os.remove(mainnet_path)
         print("Hornet export.bin has been cleaned.")
+    except IOError as e:
+        errorn, strerror = e.args
+        if errorn == errno.EACCES:
+            print("You need root permissions to do this!")
+            sys.exit(1)
+    try:
+        os.remove(comnet_path)
+        print("Hornet comnet_export.bin has been cleaned.")
     except IOError as e:
         errorn, strerror = e.args
         if errorn == errno.EACCES:
