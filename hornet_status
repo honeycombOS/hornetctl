@@ -4,6 +4,7 @@ import os
 import subprocess
 import json
 import sys
+import errno
 
 def main():
 	status = {
@@ -12,7 +13,7 @@ def main():
 		"networkType": getNetworkType(),
 		"dashboardStatus": getDashboardStatus()
 	}
-	status = json.dumps(status)
+	status = json.dumps(status, indent=1)
 	print(status)
 
 
