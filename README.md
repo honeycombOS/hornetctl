@@ -20,6 +20,7 @@ $ sudo dpkg -i nfpm_amd64.deb
 ```
 $ git clone https://github.com/honeycombOS/hornetctl
 $ cd hornetctl
+$ export HORNETCTL_VERSION=0.1
 $ nfpm pkg -t hornetctl_0.1_all.deb
 ```
 
