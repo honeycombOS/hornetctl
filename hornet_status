@@ -11,7 +11,8 @@ def main():
 		"version": getHornetVersion(),
 		"node": getNodeStatus(),
 		"networkType": getNetworkType(),
-		"dashboardStatus": getDashboardStatus()
+		"dashboardStatus": getDashboardStatus(),
+		"dashboardPort": getDashboardPort()
 	}
 	status = json.dumps(status, indent=1)
 	print(status)
@@ -97,6 +98,28 @@ def getDashboardStatus():
 		if errorn == errno.EACCES:
 			print("You need root permissions to do this!")
 			sys.exit(1)
+
+def getDashboardPort():
+	try:
+		networkType = getNetworkType()
+		if networkType == "mainnet":
+			config_file = "/var/lib/hornet/config.json"
+		elif networkType == "comnet":
+			config_file = "/var/lib/hornet/config_comnet.json"
+		lines = ""
+		with open(config_file, "r") as f:
+			data = json.load(f)
+			if '0.0.0.0' in data["dashboard"]["bindAddress"]:
+				# split port
+				return data["dashboard"]["bindAddress"].split(':')[1]
+			else:
+				return False
+	except IOError as e:
+		errorn, strerror = e.args
+		if errorn == errno.EACCES:
+			print("You need root permissions to do this!")
+			sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
