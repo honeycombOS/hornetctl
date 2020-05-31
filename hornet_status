@@ -61,6 +61,9 @@ def getNetworkType():
 		comnet_string = "OPTIONS=\"--config config_comnet\"\n"
 		lines = []
 		default_file = "/etc/default/hornet"
+		if not os.path.isfile(default_file):
+			return 'mainnet'
+
 		f = open(default_file, "r")
 		lines = f.readlines()
 		f.close()
@@ -77,10 +80,11 @@ def getNetworkType():
 def getDashboardStatus():
 	try:
 		networkType = getNetworkType()
-		if networkType == "mainnet":
-			config_file = "/var/lib/hornet/config.json"
-		elif networkType == "comnet":
+		if networkType == "comnet":
 			config_file = "/var/lib/hornet/config_comnet.json"
+		else:
+			config_file = "/var/lib/hornet/config.json"
+
 		lines = ""
 		with open(config_file, "r") as f:
 			data = json.load(f)
