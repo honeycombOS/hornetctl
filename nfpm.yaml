@@ -17,7 +17,7 @@ files:
       "hornet_dashboard": "/usr/bin/hornet_dashboard"
       "hornet_clean_db": "/usr/bin/hornet_clean_db"
       "hornet_neighbors": "/usr/bin/hornet_neighbors"
-      "hornetctl": "/usr/bin/hornetctl"
+      "hornet_control": "/usr/bin/hornet_control"
       "hornet_network": "/usr/bin/hornet_network"
       "hornet_status": "/usr/bin/hornet_status"
 

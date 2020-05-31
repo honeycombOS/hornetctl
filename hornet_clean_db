@@ -4,16 +4,6 @@ import os
 import shutil
 import sys
 import errno
-from optparse import OptionParser
-
-parser = OptionParser()
-parser.add_option("-m", "--mainnet",
-                  action="store_false", dest="comnet", default=True,
-                  help="Enable MainNet Dashboard (default).")
-parser.add_option("-c", "--comnet",
-                  action="store_true", dest="comnet", default=False,
-                  help="Enable ComNet Dashboard.")
-(options, args) = parser.parse_args()
 
 if os.geteuid() != 0:
     print("You need root permissions to do this!")
@@ -27,21 +17,25 @@ if not status:
     except:
         print("Error while stopping hornet systemd service.")
 
-if options.comnet:
-    db_kind = "comnet"
-else:
-    db_kind = "mainnet"
+db_comnet = "/var/lib/hornet/comnetdb"
+db_mainnet = "/var/lib/hornet/mainnetdb"
 
-db_path = "/var/lib/hornet/" + db_kind + "db"
-
-exists = os.path.isdir(db_path)
+exists = os.path.isdir(db_comnet) or os.path.isdir(db_mainnet)
 
 if not exists:
-    print("Hornet " + db_kind+ "db is already clean. Nothing to do.")
+    print("Hornet db is already clean. Nothing to do.")
 else:
     try:
-        shutil.rmtree(db_path)
-        print("Hornet " + db_kind + "db has been cleaned.")
+        shutil.rmtree(db_mainnet)
+        print("Hornet mainnet db has been cleaned.")
+    except IOError as e:
+        errorn, strerror = e.args
+        if errorn == errno.EACCES:
+            print("You need root permissions to do this!")
+            sys.exit(1)
+    try:
+        shutil.rmtree(db_comnet)
+        print("Hornet comnet db has been cleaned.")
     except IOError as e:
         errorn, strerror = e.args
         if errorn == errno.EACCES:

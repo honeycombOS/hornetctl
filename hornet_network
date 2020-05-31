@@ -13,6 +13,14 @@ parser.add_option("-m", "--mainnet", action="store_true", dest="network", defaul
 default_file = "/etc/default/hornet"
 comnet_string = "OPTIONS=\"--config config_comnet\"\n"
 
+status = os.system('systemctl is-active --quiet hornet') # will return 0 for active else inactive.
+if not status:
+    try:
+        print("Stopping hornet.service.")
+        os.system("systemctl stop hornet")
+    except:
+        print("Error while stopping hornet systemd service.")
+
 # read default file
 lines = []
 try:
@@ -46,3 +54,7 @@ except IOError as e:
     if errorn == errno.EACCES:
         print("You need root permissions to do this!")
         sys.exit(1)
+
+if not status: # service was running, restart it
+    print("Starting hornet.service.")
+    os.system('systemctl start hornet')
