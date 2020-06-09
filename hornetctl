@@ -384,11 +384,17 @@ def getLocal():
             sys.exit(1)
 
 def getStatus():
+    local = getLocal()
+    if local == "/var/lib/hornet":
+        local = "/var/lib/hornet (SD Card)"
+    elif local == "/mnt/hornet":
+        local = "/mnt/hornet (USB Volume)"
+
     status = {
         "version": getHornetVersion(),
         "node": getNodeStatus(),
         "networkType": getNetworkType(),
-        "local": getLocal(),
+        "local": local,
         "dashboardStatus": getDashboardStatus(),
         "dashboardPort": getDashboardPort()
     }
