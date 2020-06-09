@@ -99,11 +99,101 @@ def hornetctl_dashboard(config_file, args):
             print("You need root permissions to do this!")
             sys.exit(1)
 
+def set_snapshot_path(config, path):
+    lines = ""
+    with open(config, "r") as f:
+        for line in f.readlines():
+            lines += line.replace("\n", "")
+
+    config_json = json.loads(lines)
+    config_json["snapshots"]["local"]["path"] = path
+
+    try:
+        f = open(config, "w")
+        f.write(json.dumps(config_json, indent=1))
+        f.close()
+
+    except IOError as e:
+        errorn, strerror = e.args
+        if errorn == errno.EACCES:
+            print("You need root permissions to do this!")
+            sys.exit(1)
+
+
+def set_db_path(config, path):
+    lines = ""
+    with open(config, "r") as f:
+        for line in f.readlines():
+            lines += line.replace("\n", "")
+
+    config_json = json.loads(lines)
+    config_json["db"]["path"] = path
+
+    try:
+        f = open(config, "w")
+        f.write(json.dumps(config_json, indent=1))
+        f.close()
+
+    except IOError as e:
+        errorn, strerror = e.args
+        if errorn == errno.EACCES:
+            print("You need root permissions to do this!")
+            sys.exit(1)
+
+def hornetctl_usb(args):
+    config_file = "/var/lib/hornet/config.json"
+    config_comnet_file = "/var/lib/hornet/config_comnet.json"
+
+    volume_path = "/dev/sda1"
+    volume_exists = os.path.exists(volume_path)
+
+    # check if partition exists
+    if not volume_exists:
+        print("USB is not connected or not properly partitioned.")
+        sys.exit(1)
+
+    # if volume is already mounted, unmount it
+    if volume_path in subprocess.check_output("mount", shell=True).decode('ascii'):
+        os.system('umount ' + volume_path)
+
+    # switch to USB
+    if args.usb == 'on':
+
+        # if partition is not ext4, format it
+        if 'ext4' not in subprocess.check_output("blkid " + volume_path, shell=True).decode('ascii'):
+            print("Formatting the partition to ext4. Please be Patient!\n")
+            os.system('mkfs.ext4 -F ' + volume_path)
+
+        # mount on /mnt
+        os.system('mount ' + volume_path + ' ' + '/mnt')
+
+        # create /mnt/hornet
+        if not os.path.isdir('/mnt/hornet'):
+            os.mkdir('/mnt/hornet')
+
+        # set ownership of /mnt/hornet to hornet user
+        os.system('chown -R hornet:hornet /mnt/hornet')
+
+        set_db_path(config_file, '/mnt/hornet/mainnetdb')
+        set_db_path(config_comnet_file, '/mnt/hornet/comnetdb')
+
+        set_snapshot_path(config_file, '/mnt/hornet/export.bin')
+        set_snapshot_path(config_comnet_file, '/mnt/hornet/export_comnet.bin')
+
+    # switch to SD
+    else:
+        set_db_path(config_file, 'mainnetdb')
+        set_db_path(config_comnet_file, 'comnetdb')
+
+        set_snapshot_path(config_file, 'export.bin')
+        set_snapshot_path(config_comnet_file, 'export_comnet.bin')
+
+
 def hornetctl_clean(args):
 
     if args.clean == "db" or args.clean == "all":
-        db_comnet = "/var/lib/hornet/comnetdb"
-        db_mainnet = "/var/lib/hornet/mainnetdb"
+        db_comnet = getLocal() + "/comnetdb"
+        db_mainnet = getLocal() + "/mainnetdb"
 
         db_exists = os.path.isdir(db_comnet) or os.path.isdir(db_mainnet)
 
@@ -129,17 +219,26 @@ def hornetctl_clean(args):
 
     if args.clean == "snapshot" or args.clean == "all":
 
-        snapshot_mainnet = "/var/lib/hornet/export.bin"
-        snapshot_comnet = "/var/lib/hornet/export_comnet.bin"
+        snapshot_mainnet = getLocal() + "/export.bin"
+        snapshot_mainnet_tmp = getLocal() + "/export.bin.tmp"
+        snapshot_comnet = getLocal() + "/export_comnet.bin"
 
-        snapshot_exists = os.path.isfile(snapshot_mainnet) or os.path.isfile(snapshot_comnet)
+        snapshot_exists = os.path.isfile(snapshot_mainnet) or os.path.isfile(snapshot_mainnet_tmp) or os.path.isfile(snapshot_comnet)
 
         if not snapshot_exists:
-            print("Hornet export.bin is already clean. Nothing to do.")
+            print("Hornet snapshots are already clean. Nothing to do.")
         else:
             try:
                 os.remove(snapshot_mainnet)
                 print("Hornet mainnet snapshot has been cleaned.")
+            except IOError as e:
+                errorn, strerror = e.args
+                if errorn == errno.EACCES:
+                    print("You need root permissions to do this!")
+                    sys.exit(1)
+            try:
+                os.remove(snapshot_mainnet_tmp)
+                print("Hornet mainnet tmp snapshot has been cleaned.")
             except IOError as e:
                 errorn, strerror = e.args
                 if errorn == errno.EACCES:
@@ -263,12 +362,33 @@ def getDashboardPort():
             print("You need root permissions to do this!")
             sys.exit(1)
 
+def getLocal():
+    try:
+        networkType = getNetworkType()
+        if networkType == "comnet":
+            config_file = "/var/lib/hornet/config_comnet.json"
+        else:
+            config_file = "/var/lib/hornet/config.json"
+
+        lines = ""
+        with open(config_file, "r") as f:
+            data = json.load(f)
+            if '/mnt' in data["snapshots"]["local"]["path"]:
+                return '/mnt/hornet'
+            else:
+                return '/var/lib/hornet'
+    except IOError as e:
+        errorn, strerror = e.args
+        if errorn == errno.EACCES:
+            print("You need root permissions to do this!")
+            sys.exit(1)
 
 def getStatus():
     status = {
         "version": getHornetVersion(),
         "node": getNodeStatus(),
         "networkType": getNetworkType(),
+        "local": getLocal(),
         "dashboardStatus": getDashboardStatus(),
         "dashboardPort": getDashboardPort()
     }
@@ -295,6 +415,9 @@ def main():
 
     parser_dashboard = subparsers.add_parser('dashboard', help='enable/disable dashboard')
     parser_dashboard.add_argument('dashboard', choices=['on', 'off'], help='on enables, off disables')
+
+    parser_usb = subparsers.add_parser('usb', help='enable/disable USB for db and snapshot')
+    parser_usb.add_argument('usb', choices=['on', 'off'], help='on enables, off disables')
 
     parser_clean = subparsers.add_parser('clean', help='clean db/snapshot')
     parser_clean.add_argument('clean', choices=['db', 'snapshot', 'all'], help='db, snapshot or all')
@@ -335,6 +458,10 @@ def main():
     if args.cmd == 'dashboard':
         hornetctl_dashboard(comnet_config_file, args)
         hornetctl_dashboard(config_file, args)
+
+    # enable/disable USB for db and snapshot?
+    if args.cmd == 'usb':
+        hornetctl_usb(args)
 
     if args.cmd == 'clean':
         hornetctl_clean(args)
