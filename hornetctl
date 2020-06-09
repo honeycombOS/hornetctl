@@ -315,6 +315,11 @@ def main():
     comnet_config_file = "/var/lib/hornet/config_comnet.json"
     config_file = "/var/lib/hornet/config.json"
 
+    # no cmd?
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+
     # start/stop node?
     if args.cmd == 'node':
         hornetctl_node(args)
