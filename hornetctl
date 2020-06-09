@@ -147,17 +147,17 @@ def hornetctl_usb(args):
     volume_path = "/dev/sda1"
     volume_exists = os.path.exists(volume_path)
 
-    # check if partition exists
-    if not volume_exists:
-        print("USB is not connected or not properly partitioned.")
-        sys.exit(1)
-
-    # if volume is already mounted, unmount it
-    if volume_path in subprocess.check_output("mount", shell=True).decode('ascii'):
-        os.system('umount ' + volume_path)
-
     # switch to USB
     if args.usb == 'on':
+
+        # check if partition exists
+        if not volume_exists:
+            print("USB is not connected or not properly partitioned.")
+            sys.exit(1)
+
+        # if volume is already mounted, unmount it
+        if volume_path in subprocess.check_output("mount", shell=True).decode('ascii'):
+            os.system('umount ' + volume_path)
 
         # if partition is not ext4, format it
         if 'ext4' not in subprocess.check_output("blkid " + volume_path, shell=True).decode('ascii'):
@@ -182,6 +182,10 @@ def hornetctl_usb(args):
 
     # switch to SD
     else:
+        # if volume is mounted, unmount it
+        if volume_path in subprocess.check_output("mount", shell=True).decode('ascii'):
+            os.system('umount ' + volume_path)
+
         set_db_path(config_file, 'mainnetdb')
         set_db_path(config_comnet_file, 'comnetdb')
 
