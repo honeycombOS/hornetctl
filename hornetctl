@@ -15,6 +15,10 @@ def hornetctl_node(args):
             print('Service is already running!')
             sys.exit(1)
 
+        if not os.system('systemctl is-active --quiet goshimmer'):  # will return 0 for active else inactive.
+            print('GoShimmer is already running! You cannot run both nodes at the same time.')
+            sys.exit(1)
+
         print("Starting Hornet Systemd Service.")
         os.system('systemctl start hornet')
     else:
