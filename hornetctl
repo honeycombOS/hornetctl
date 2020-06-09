@@ -154,6 +154,8 @@ def hornetctl_clean(args):
                     print("You need root permissions to do this!")
                     sys.exit(1)
 
+def hornetctl_log():
+    os.system('journalctl -u hornet') #ToDo: improve this so it shows only the tail
 
 def getHornetVersion():
     try:
@@ -297,6 +299,8 @@ def main():
     parser_clean = subparsers.add_parser('clean', help='clean db/snapshot')
     parser_clean.add_argument('clean', choices=['db', 'snapshot', 'all'], help='db, snapshot or all')
 
+    parser_log = subparsers.add_parser('log', help='show log')
+
     args = parser.parse_args()
 
     # check if service is running
@@ -329,6 +333,9 @@ def main():
 
     if args.cmd == 'clean':
         hornetctl_clean(args)
+
+    if args.cmd == 'log':
+        hornetctl_log()
 
     # if service was running, restart it
     if not status and args.cmd != 'node' and args.cmd != 'status':
