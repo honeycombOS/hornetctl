@@ -438,7 +438,7 @@ def main():
 
     # check if service is running
     status = os.system('systemctl is-active --quiet hornet') # will return 0 for active else inactive.
-    if not status and args.cmd != 'node' and args.cmd != 'status':
+    if not status and args.cmd != 'node' and args.cmd != 'status' and args.cmd != 'log':
         try:
             print("Stopping hornet.service.")
             os.system("systemctl stop hornet")
@@ -480,7 +480,7 @@ def main():
         hornetctl_log()
 
     # if service was running, restart it
-    if not status and args.cmd != 'node' and args.cmd != 'status':
+    if not status and args.cmd != 'node' and args.cmd != 'status' and args.cmd != 'log':
         print(
             "Restarting hornet.service.\nIf you note systemd errors, stop the service, run \'hornetctl clean all\' and restart the service.")
         os.system('systemctl start hornet')
