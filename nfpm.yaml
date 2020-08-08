@@ -12,7 +12,7 @@ description: HORNET helper tools.
 license: "Apache 2.0"
 bindir: "/usr/bin"
 files:
-      "hornetctl": "/usr/bin/hornetctl"
+      "hornetctl/__init__.py": "/usr/bin/hornetctl"
 
 overrides:
   deb:
