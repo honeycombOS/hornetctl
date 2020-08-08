@@ -1,12 +1,6 @@
 #!/bin/sh
 set -e
 
-chmod +x /usr/bin/hornet_clean_export
-chmod +x /usr/bin/hornet_clean_db
-chmod +x /usr/bin/hornet_dashboard
-chmod +x /usr/bin/hornet_neighbors
-chmod +x /usr/bin/hornet_control
-chmod +x /usr/bin/hornet_network
-chmod +x /usr/bin/hornet_status
+chmod +x /usr/bin/hornetctl
 
 exit 0

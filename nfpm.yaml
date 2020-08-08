@@ -4,7 +4,6 @@ arch: "all"
 platform: "linux"
 version: "v${HORNETCTL_VERSION}"
 depends:
-      - hornet
       - python3
       - python3-yaml
       - python3-urllib3
@@ -13,13 +12,7 @@ description: HORNET helper tools.
 license: "Apache 2.0"
 bindir: "/usr/bin"
 files:
-      "hornet_clean_export": "/usr/bin/hornet_clean_export"
-      "hornet_dashboard": "/usr/bin/hornet_dashboard"
-      "hornet_clean_db": "/usr/bin/hornet_clean_db"
-      "hornet_neighbors": "/usr/bin/hornet_neighbors"
-      "hornet_control": "/usr/bin/hornet_control"
-      "hornet_network": "/usr/bin/hornet_network"
-      "hornet_status": "/usr/bin/hornet_status"
+      "hornetctl": "/usr/bin/hornetctl"
 
 overrides:
   deb:
