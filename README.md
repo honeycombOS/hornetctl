@@ -6,7 +6,39 @@ This repository contains tools that help managing HORNET nodes.
 
 It's designed to work with [nfpm](https://github.com/goreleaser/nfpm) CLI tool to create a `.deb.` package.
 
-# Install
+# Python
+
+Tested on Ubuntu 18.04.
+
+1. Install SetupTools:
+```
+$ sudo apt-get install python3-setuptools
+```
+
+2. Clone this repo:
+```
+$ git clone https://github.com/honeycombOS/hornetctl.git
+```
+
+3. Install `hornetctl` Python3 module:
+```
+$ cd hornetctl
+$ sudo python3 setup.py install
+``` 
+
+4. Open a Python3 console and try out `hornetctl` API:
+```
+$ python3
+Python 3.6.9 (default, Jul 17 2020, 12:50:27) 
+[GCC 8.4.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import hornetctl
+>>> hornetctl.getStatus()
+'{\n "version": "HORNET 0.4.2",\n "node": {\n  "status": "inactive"\n },\n "networkType": "mainnet",\n "local": "/var/lib/hornet (SD Card)",\n "dashboardStatus": "disabled",\n "dashboardPort": false\n}'
+>>>
+```
+
+# NFPM
 
 Tested on Ubuntu 18.04.
 
