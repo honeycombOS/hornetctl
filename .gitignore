@@ -1,0 +1,6 @@
+build/
+dist/
+hornetctl_0.1_all.deb
+hornetctl_pkg_bernardoaraujor.egg-info/
+tmp/
+
